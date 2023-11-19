@@ -1,0 +1,43 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+iram             0x0000000080000000 0x0000000000007000 xr
+dram             0x0000000000000000 0x0000000000004000 rw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD build/start.o
+LOAD /opt/riscv32i/lib/gcc/riscv32-unknown-elf/10.2.0/libgcc.a
+START GROUP
+LOAD /opt/riscv32i/lib/gcc/riscv32-unknown-elf/10.2.0/../../../../riscv32-unknown-elf/lib/libc.a
+LOAD /opt/riscv32i/lib/gcc/riscv32-unknown-elf/10.2.0/../../../../riscv32-unknown-elf/lib/libgloss.a
+END GROUP
+LOAD /opt/riscv32i/lib/gcc/riscv32-unknown-elf/10.2.0/libgcc.a
+
+.init
+ *(.init*)
+
+.text           0x0000000080000000      0x1c8
+ *(.text*)
+ .text          0x0000000080000000      0x1c8 build/start.o
+                0x0000000080000000                _start
+
+.rodata
+ *(.rodata*)
+
+.data           0x0000000000000000        0x0
+ *(.data*)
+ .data          0x0000000000000000        0x0 build/start.o
+
+.bss            0x0000000000000000        0x0
+ *(.sbss*)
+ .bss           0x0000000000000000        0x0 build/start.o
+                0x00000000000003ff                __stack_top = 0x3ff
+OUTPUT(build/rv_assembler.elf elf32-littleriscv)
+
+.riscv.attributes
+                0x0000000000000000       0x1a
+ .riscv.attributes
+                0x0000000000000000       0x1a build/start.o
